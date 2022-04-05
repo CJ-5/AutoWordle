@@ -92,14 +92,13 @@ def process_action(_action):
         _action = None
 
         # Add Script to deal with conflicts of letters being in one list and not the other
-        active_list = []  # Known letters (Max of 6)
+        active_list = []  # Known letters (Max of 5)
         active_pos = {0: None,  # List of positions that we know the letter is in
                       1: None,
                       2: None,
                       3: None,
                       4: None,
-                      5: None,
-                      6: None}
+                      5: None}
         invalid_letters = []  # Letters that are not in the word
 
         while _stat:
@@ -120,7 +119,6 @@ def process_action(_action):
             {Fore.YELLOW}3{Fore.RESET}: {Fore.BLUE}{active_pos[2]}
             {Fore.YELLOW}4{Fore.RESET}: {Fore.BLUE}{active_pos[3]}
             {Fore.YELLOW}5{Fore.RESET}: {Fore.BLUE}{active_pos[4]}
-            {Fore.YELLOW}6{Fore.RESET}: {Fore.BLUE}{active_pos[5]}
             """)
 
 
@@ -131,8 +129,8 @@ def process_action(_action):
                 print("Suggest Analytics Command is invalid. Please choose from the action list")
             else:  # Command is ok
                 if saction == "l_add":  # Add to the list of known letters
-                    if len(active_list) == 6:
-                        print(f"{Fore.RED}Cant add to list, there are already 6 letters. Please use 'l_clear' to"
+                    if len(active_list) == 5:
+                        print(f"{Fore.RED}Cant add to list, there are already 5 letters. Please use 'l_clear' to"
                               f" clear the active list or 'l_set' to set a new list")
                         time.sleep(3)
                     else:
@@ -150,11 +148,11 @@ def process_action(_action):
                     active_list.clear()
                     time.sleep(1)
                 elif saction == "l_set":    # The list of known letters (not their exact positions)
-                    print(f"{Fore.GREEN}Setting known letters (upto: {Fore.YELLOW}6{Fore.GREEN}){Fore.RESET}\n")
+                    print(f"{Fore.GREEN}Setting known letters (upto: {Fore.YELLOW}5{Fore.GREEN}){Fore.RESET}\n")
                     letter_list = input(f"{Fore.GREEN}>{Fore.YELLOW}:{Fore.RESET} ")
                     os.system("cls")
-                    if len(letter_list) > 6:
-                        print(f"{Fore.RED}List cannot be above 6 letters...{Fore.RESET}")
+                    if len(letter_list) > 5:
+                        print(f"{Fore.RED}List cannot be above 5 letters...{Fore.RESET}")
                         time.sleep(1.4)
                     else:
                         str_format = "".join(x for x in letter_list)
@@ -166,7 +164,7 @@ def process_action(_action):
                 elif saction == "p_set":    # Set letters into the positions that are known
                     os.system("cls")
                     print(f"{Fore.BLUE}Setting Letter Positions")
-                    for i in range(6):
+                    for i in range(5):
                         char = input(f"{Fore.GREEN}Position {Fore.YELLOW}{i+1}: ")
                         active_pos[i] = [None, char][len(char) == 1 and not char == " "]
 
@@ -195,7 +193,9 @@ def process_action(_action):
                     time.sleep(2)
                 elif saction == "i_clear":
                     os.system("cls")
+                    invalid_letters.clear()
                     print(f"{Fore.GREEN}Invalid Letter List Cleared!{Fore.RESET}")
+                    time.sleep(1)
                     os.system("cls")
                 elif saction == "s_list":   # Print list of suggested words
                     print(f"{Fore.GREEN}Generating Suggestion List...{Fore.YELLOW} (This may take a while)\n")
@@ -208,6 +208,7 @@ def process_action(_action):
                     print('\033[?25l', end="")  # Hide Cursor
                     for i, word in enumerate(word_list):
                         valid = True
+
                         # Check to make sure the word does not contain any invalid letters
                         for letter in word:
                             if letter in invalid_letters:
