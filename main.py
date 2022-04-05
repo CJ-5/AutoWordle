@@ -4,7 +4,7 @@ import os
 from colorama import Style, Fore, Back
 import json
 
-colorama.init() # Initiate colorama lib (needed for escape codes)
+colorama.init()  # Initiate colorama lib (needed for escape codes)
 action_list = ["analyze", "complete", "exit", "load", "suggest"]
 # scommand_list = ["l_add", "l_clear", "l_set", "p_clear", "p_set", "s_list", "help", exit]
 scommands = {"l_add": "Add to the list of known letters",
@@ -36,13 +36,13 @@ if __name__ == '__main__':
     # (action is None) or (action not in action_list)
 
     while True:  # Command Handler
-        print("\n\nAction List:")
-        print(f"[{', '.join([x for x in action_list])}]")
-        action = input("\nPlease input the action to take: ")
+        print(f"\n\n{Fore.GREEN}Action List:")
+        print(f"[{f'{Fore.GREEN},{Fore.YELLOW} '.join([x for x in action_list])}]")
+        action = input(f"\n{Fore.GREEN}Please input the action to take{Fore.YELLOW}:{Fore.RESET} ")
         if action not in action:
             system("cls")
-            print(f"{Fore.RED}Error{Fore.RESET}: Selected action not in list")
-            print("Please check the commands spelling")
+            print(f"{Fore.RED}Error{Fore.RESET}: {Fore.YELLOW}Selected action not in list")
+            print(f"{Fore.RED}Please check the commands spelling{Fore.RESET}")
             time.sleep(2)
         else:
             lib.process_action(action)
