@@ -100,6 +100,7 @@ def process_action(_action):
                       4: None,
                       5: None,
                       6: None}
+        invalid_letters = []  # Letters that are not in the word
 
         while _stat:
             # Loop Headers
@@ -110,14 +111,16 @@ def process_action(_action):
 
             print(f"{Fore.GREEN}Known Letter List: {Fore.YELLOW}"
                   f"{[''.join(x for x in active_list), 'Empty List'][not active_list]}")
+            print(f"{Fore.GREEN}Invalid Letter List: "
+                  f"{Fore.YELLOW} {[''.join(x for x in invalid_letters), 'Empty List'][not invalid_letters]}")
             print(f"""
             {Fore.GREEN}Known Position List:
-            {Fore.YELLOW}1{Fore.RESET}: {Fore.GREEN}{active_pos[0]}
-            {Fore.YELLOW}2{Fore.RESET}: {Fore.GREEN}{active_pos[1]}
-            {Fore.YELLOW}3{Fore.RESET}: {Fore.GREEN}{active_pos[2]}
-            {Fore.YELLOW}4{Fore.RESET}: {Fore.GREEN}{active_pos[3]}
-            {Fore.YELLOW}5{Fore.RESET}: {Fore.GREEN}{active_pos[4]}
-            {Fore.YELLOW}6{Fore.RESET}: {Fore.GREEN}{active_pos[5]}
+            {Fore.YELLOW}1{Fore.RESET}: {Fore.BLUE}{active_pos[0]}
+            {Fore.YELLOW}2{Fore.RESET}: {Fore.BLUE}{active_pos[1]}
+            {Fore.YELLOW}3{Fore.RESET}: {Fore.BLUE}{active_pos[2]}
+            {Fore.YELLOW}4{Fore.RESET}: {Fore.BLUE}{active_pos[3]}
+            {Fore.YELLOW}5{Fore.RESET}: {Fore.BLUE}{active_pos[4]}
+            {Fore.YELLOW}6{Fore.RESET}: {Fore.BLUE}{active_pos[5]}
             """)
 
 
@@ -168,29 +171,84 @@ def process_action(_action):
                         active_pos[i] = [None, char][len(char) == 1 and not char == " "]
 
                     time.sleep(1)
+
+                elif saction == "i_set":
+                    os.system("cls")
+                    invalid_letters.clear()
+                    print(f"{Fore.BLUE}Setting Invalid Letters")
+                    letters = input(f"   {Fore.GREEN}>{Fore.YELLOW}:{Fore.RESET} ")
+                    for x in letters:
+                        if x not in invalid_letters:
+                            invalid_letters.append(x)
+
+                elif saction == "i_add":
+                    os.system("cls")
+                    print(f"{Fore.GREEN}Adding to list of invalid letters{Fore.RESET}\n")
+                    letter = input(f"   {Fore.GREEN}>{Fore.YELLOW}:{Fore.RESET} ")
+                    if not len(letter) == 1:
+                        print(f"{Fore.RED}Letter can only be {Fore.YELLOW}1{Fore.RED} in length.{Fore.RED}")
+                    elif letter in invalid_letters:
+                        print(f"{Fore.RED}Letter is already in list.")
+                    else:  # Add letter to list
+                        print(f"{Fore.GREEN}Added {Fore.YELLOW}{letter}{Fore.GREEN} to the invalid letter list list!")
+                        invalid_letters.append(letter)
+                    time.sleep(2)
+                elif saction == "i_clear":
+                    os.system("cls")
+                    print(f"{Fore.GREEN}Invalid Letter List Cleared!{Fore.RESET}")
+                    os.system("cls")
                 elif saction == "s_list":   # Print list of suggested words
                     print(f"{Fore.GREEN}Generating Suggestion List...{Fore.YELLOW} (This may take a while)\n")
-                    print(f"{Fore.BLUE}Progress{Fore.RESET}:{Fore.YELLOW} 0%")
+                    print(f"{Fore.BLUE}Progress{Fore.RESET}:{Fore.YELLOW} 0%", end='')
 
                     # Generate list of words that contain known letters
                     word_list = main.word_list
                     candidates0 = []
-                    for word in word_list:
+                    wl_length = len(word_list)
+                    print('\033[?25l', end="")  # Hide Cursor
+                    for i, word in enumerate(word_list):
                         valid = True
+                        # Check to make sure the word does not contain any invalid letters
                         for letter in word:
-                            if letter not in active_list:
+                            if letter in invalid_letters:
                                 valid = False
                                 break
 
+                        # Initial Check (Check to make sure that all known letters are in the word)
                         if valid:
-                            # Check if letters are in known positions
-                            
+                            for kl in active_list:
+                                _valid = False
+                                for letter in word:  # if the word contains a known letter _valid will tick True
+                                    _valid = letter == kl
+                                    if _valid:
+                                        break
 
+                                if not _valid:
+                                    valid = False
+                                    break
+
+                        if valid:  # Position Check
+                            for x, char in enumerate(word):
+                                if active_pos[x] is not None:
+                                    valid = active_pos[x] == char
+                                    if not valid:
+                                        break
+
+                        if valid:
+                            candidates0.append(word)
+
+                        print(f'\r{Fore.BLUE}Progress{Fore.RESET}:{Fore.YELLOW} {round((i / wl_length) * 100)}%', end='')
+
+                    print('\033[?25h', end="")  # Show Cursor
+                    print("\n")
+                    print(f"{Fore.GREEN}List of candidates: {Fore.YELLOW}"
+                          f"{f'{Fore.GREEN},{Fore.YELLOW} '.join(x for x in candidates0)}")
+                    input("Press Any Key to Continue...")
 
                 elif saction == "help":  # Print Help Command
                     for list_item in main.scommands:
-                        print(f"{f'{Fore.GREEN}{list_item}{Fore.RESET}:':<30}"
-                              f"{Fore.YELLOW}{main.scommands[list_item]}{Fore.RESET}")
+                        print(f"{f'{Fore.GREEN}{list_item}{Fore.RESET}:':<30}"  # Key
+                              f"{Fore.YELLOW}{main.scommands[list_item]}{Fore.RESET}")  # Definition
                     print("\n\n")
                 elif saction == "exit":
                     print(Fore.RESET)
