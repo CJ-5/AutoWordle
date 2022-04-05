@@ -20,25 +20,33 @@ scommands = {"l_add": "Add to the list of known letters",
              "exit": "Exit suggestion mode"}
 action = None
 word_list = []
+key_prompt = False
 
 if __name__ == '__main__':
     print("Initiating WordleAuto...")
     time.sleep(1)
-    print("Loading Word list...")
+    print("Starting Async Any_Key Listener")
+    lib.any_key_prompt()
 
-    if os.path.exists("./data.json"):  # Load words from word list file
-        f = open("./data.json")
-        json_file = json.load(f)
-        word_list = json_file["word_list"]
-        f.close()
-
-    print("Loaded Word List!")
-    # (action is None) or (action not in action_list)
+    # Add script to attempt to auto load the word list
+    # print("Loading Wordlist")
+    # if os.path.exists("./data.json"):  # Load words from word list file
+    #     f = open("./data.json")
+    #     json_file = json.load(f)
+    #     word_list = json_file["word_list"]
+    #     f.close()
+    #
+    # print("Loaded Word List!")
+    # # (action is None) or (action not in action_list)
 
     while True:  # Command Handler
-        print(f"\n\n{Fore.GREEN}Action List:")
+        print(f"\n{Fore.GREEN}Action List{Fore.YELLOW}:{Fore.RESET}")
         print(f"[{f'{Fore.GREEN},{Fore.YELLOW} '.join([x for x in action_list])}]")
-        action = input(f"\n{Fore.GREEN}Please input the action to take{Fore.YELLOW}:{Fore.RESET} ")
+        print(f"{Fore.GREEN}Word List Load Status: "
+              f"{[f'{Fore.GREEN}Loaded! {Fore.BLUE}{len(word_list)} words', f'{Fore.RED}Not Loaded'][not word_list]}")
+        print()  # New Line
+        print(f"{Fore.GREEN}Please input the action to take{Fore.YELLOW}:{Fore.RESET} ", end='')
+        action = input()
         if action not in action:
             system("cls")
             print(f"{Fore.RED}Error{Fore.RESET}: {Fore.YELLOW}Selected action not in list")

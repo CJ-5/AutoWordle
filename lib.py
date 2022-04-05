@@ -1,6 +1,6 @@
 import colorama, time, sys, os, json
+from pynput import keyboard
 from colorama import Style, Fore, Back
-from collections import OrderedDict
 import main
 
 
@@ -45,7 +45,7 @@ def process_action(_action):
                 for l in w:
                     letter_pop[l] += 1
 
-            print("Results Gathered")
+            print(f"{Fore.GREEN}Results Gathered{Fore.RESET}")
             print("\n")
             key_list = list(letter_pop.keys())
             for i in range(len(letter_pop)):
@@ -84,6 +84,7 @@ def process_action(_action):
                 file_loaded = True  # Exit Loop
             else:  # file does not exist
                 print(f"{Fore.RED}Specified File path does not exist{Fore.RESET}")
+                time.sleep(1)
         print(f"{Fore.GREEN}File Loaded{Fore.RESET}")
         time.sleep(1)
     elif _action == "suggest":
@@ -206,7 +207,8 @@ def process_action(_action):
                     candidates0 = []
                     wl_length = len(word_list)
                     print('\033[?25l', end="")  # Hide Cursor
-                    for i, word in enumerate(word_list):
+
+                    for i, word in enumerate(word_list): # Generate List of valid Candidates
                         valid = True
 
                         # Check to make sure the word does not contain any invalid letters
@@ -243,8 +245,10 @@ def process_action(_action):
                     print('\033[?25h', end="")  # Show Cursor
                     print("\n")
                     print(f"{Fore.GREEN}List of candidates: {Fore.YELLOW}"
-                          f"{f'{Fore.GREEN},{Fore.YELLOW} '.join(x for x in candidates0)}")
-                    input("Press Any Key to Continue...")
+                          f"{[f'{Fore.GREEN},{Fore.YELLOW} '.join(x for x in candidates0), 'No Candidates Found'][not candidates0]}")
+                    main.key_prompt = True
+                    while main.key_prompt:
+                        continue
 
                 elif saction == "help":  # Print Help Command
                     for list_item in main.scommands:
@@ -254,3 +258,18 @@ def process_action(_action):
                 elif saction == "exit":
                     print(Fore.RESET)
                     _stat = False
+
+
+def on_press(_):
+    if main.key_prompt:
+        main.key_prompt = False
+
+
+def any_key_prompt():
+    try:
+        print(f"{Fore.GREEN}Started Async Listener{Fore.RESET}")
+        kb = keyboard.Listener(on_press=on_press)
+        kb.start()
+    except:
+        print(f"{Fore.RED}Any_Key Async Listener Failed to start{Fore.RESET}")
+
