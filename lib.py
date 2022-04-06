@@ -111,13 +111,22 @@ def process_action(_action):
             # Loop Headers
             os.system("cls")
             print(f"\n{Fore.LIGHTBLUE_EX}Running Suggestions Analytics{Fore.RESET}\n")
+
+            # Action List
             print(f"{Fore.GREEN}Action List:{Fore.RESET} {Fore.YELLOW}"
                   f"[{Fore.RESET}{', '.join(x for x in list(main.scommands.keys()))}{Fore.YELLOW}]{Fore.RESET}")
+
+            # Known Letter List
             print(f"{Fore.GREEN}Known Letter List: {Fore.YELLOW}"
-                  f"{[''.join(x for x in active_list), 'Empty List'][not active_list]}")
+                  f"{[''.join(x for x in active_list), f'{Fore.RED}Empty List{Fore.RESET}'][not active_list]}")
+
+            # Invalid Letter List
             print(f"{Fore.GREEN}Invalid Letter List: "
                   f"{Fore.YELLOW} {[''.join(x for x in invalid_letters), f'{Fore.RED}Empty List'][not invalid_letters]}")
-            print([f"{Fore.GREEN}Used Words List: {Fore.RESET}[{Fore.YELLOW}{f'{Fore.GREEN}, {Fore.YELLOW}'.join([x for x in used_words_list])}{Fore.RESET}]", f'{Fore.RED}Empty List'][not used_words_list])
+
+            # Used Words List
+            print(f"{Fore.GREEN}Used Words List: " 
+                  f"{[Fore.YELLOW + f'{Fore.GREEN}, {Fore.YELLOW}'.join([x for x in used_words_list]), f'{Fore.RED}Empty List'][not used_words_list]}{Fore.RESET}")
             
             print(f"""
             {Fore.GREEN}Known Position List:
@@ -263,12 +272,11 @@ def process_action(_action):
                 elif saction == "u_add":
                     print(f"{Fore.LIGHTBLUE_EX}Adding to Used Words List")
                     word = input(f"   {Fore.GREEN}>{Fore.YELLOW}:{Fore.RESET} ")
-                    if len(word) != 5:
+                    if len(word) != 5 or word not in main.word_list:
                         print(f"{Fore.RED}Invalid Word Length{Fore.RESET}")
                     else:
                         print(f"{Fore.GREEN}Added {Fore.YELLOW}{word}{Fore.RESET}")
-
-                    used_words_list.append(word)
+                        used_words_list.append(word)
                     time.sleep(1.3)
                 elif saction == "u_clear":
                     print(f"{Fore.LIGHTBLUE_EX}Cleared {Fore.YELLOW}{len(used_words_list)}{Fore.RESET}"
@@ -278,28 +286,24 @@ def process_action(_action):
                 elif saction == "u_set":
                     print(f"{Fore.LIGHTBLUE_EX}Setting Used Words List {Fore.RESET}")
 
-                    print("Please separate the words by a comma")
+                    print(f"{Fore.LIGHTBLUE_EX}Please separate the words by a comma{Fore.RESET}")
                     used_words = list(input(f"   {Fore.GREEN}>{Fore.YELLOW}:{Fore.RESET} ").lower().replace(' ', '').split(','))
                     valid_words = []
 
                     warning = False
                     for word in used_words:
-                        if len(word) != 5:
+                        if len(word) != 5 or word not in main.word_list:
                             warning = True
                             print(f"{Fore.RED}Invalid Word{Fore.RESET}: {Fore.YELLOW}{word}")
                         else:
                             valid_words.append(word)
 
-                    if warning:
-                        time.sleep(1.3)
-
-                    valid_words.sort()
-                    print([f"{Fore.GREEN}Added {Fore.YELLOW}{f'{Fore.GREEN},{Fore.YELLOW} '.join([x for x in used_words])} to the used words list", f"{Fore.RED}No New Words Added to the list{Fore.RESET}"][not valid_words])
-
-                    for word in valid_words:
-                        used_words_list.append(word)
-
-                    time.sleep(1)
+                    if not warning:
+                        valid_words.sort()
+                        print([f"{Fore.GREEN}Added {Fore.YELLOW}{f'{Fore.GREEN},{Fore.YELLOW} '.join([x for x in used_words])} to the used words list", f"{Fore.RED}No New Words Added to the list{Fore.RESET}"][not valid_words])
+                        for word in valid_words:
+                            used_words_list.append(word)
+                        time.sleep(1)
                 elif saction == "help":  # Print Help Command
                     for list_item in main.scommands:
                         print(f"{f'{Fore.GREEN}{list_item}{Fore.RESET}:':<30}"  # Key
