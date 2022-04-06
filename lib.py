@@ -2,6 +2,11 @@ import colorama, time, sys, os, json
 from pynput import keyboard
 from colorama import Style, Fore, Back
 import main
+from win32gui import GetWindowText, GetForegroundWindow
+
+
+def is_focused():
+    return main.initial_window_title == GetWindowText(GetForegroundWindow())
 
 
 def process_action(_action):
@@ -74,12 +79,11 @@ def process_action(_action):
         while not file_loaded:
             os.system("cls")
             print(f"{Fore.YELLOW}Loading word list...{Fore.RESET}")
-
             file_path = input("File Path: ")
-
             if os.path.isfile(file_path):
                 f = open(file_path)
                 main.word_list = json.load(f)["word_list"]
+                print(len(main.word_list))
                 f.close()
                 file_loaded = True  # Exit Loop
             else:  # file does not exist
@@ -101,38 +105,40 @@ def process_action(_action):
                       4: None,
                       5: None}
         invalid_letters = []  # Letters that are not in the word
+        used_words_list = []  # Which words the user has already attempted
 
         while _stat:
             # Loop Headers
             os.system("cls")
-            print(f"\n{Fore.BLUE}Running Suggestions Analytics{Fore.RESET}\n")
+            print(f"\n{Fore.LIGHTBLUE_EX}Running Suggestions Analytics{Fore.RESET}\n")
             print(f"{Fore.GREEN}Action List:{Fore.RESET} {Fore.YELLOW}"
                   f"[{Fore.RESET}{', '.join(x for x in list(main.scommands.keys()))}{Fore.YELLOW}]{Fore.RESET}")
-
             print(f"{Fore.GREEN}Known Letter List: {Fore.YELLOW}"
                   f"{[''.join(x for x in active_list), 'Empty List'][not active_list]}")
             print(f"{Fore.GREEN}Invalid Letter List: "
-                  f"{Fore.YELLOW} {[''.join(x for x in invalid_letters), 'Empty List'][not invalid_letters]}")
+                  f"{Fore.YELLOW} {[''.join(x for x in invalid_letters), f'{Fore.RED}Empty List'][not invalid_letters]}")
+            print([f"{Fore.GREEN}Used Words List: {Fore.RESET}[{Fore.YELLOW}{f'{Fore.GREEN}, {Fore.YELLOW}'.join([x for x in used_words_list])}{Fore.RESET}]", f'{Fore.RED}Empty List'][not used_words_list])
+            
             print(f"""
             {Fore.GREEN}Known Position List:
-            {Fore.YELLOW}1{Fore.RESET}: {Fore.BLUE}{active_pos[0]}
-            {Fore.YELLOW}2{Fore.RESET}: {Fore.BLUE}{active_pos[1]}
-            {Fore.YELLOW}3{Fore.RESET}: {Fore.BLUE}{active_pos[2]}
-            {Fore.YELLOW}4{Fore.RESET}: {Fore.BLUE}{active_pos[3]}
-            {Fore.YELLOW}5{Fore.RESET}: {Fore.BLUE}{active_pos[4]}
+            {Fore.YELLOW}1{Fore.RESET}: {Fore.LIGHTBLUE_EX}{active_pos[0]}
+            {Fore.YELLOW}2{Fore.RESET}: {Fore.LIGHTBLUE_EX}{active_pos[1]}
+            {Fore.YELLOW}3{Fore.RESET}: {Fore.LIGHTBLUE_EX}{active_pos[2]}
+            {Fore.YELLOW}4{Fore.RESET}: {Fore.LIGHTBLUE_EX}{active_pos[3]}
+            {Fore.YELLOW}5{Fore.RESET}: {Fore.LIGHTBLUE_EX}{active_pos[4]}
             """)
 
-
             # "l_add", "l_clear", "l_set", "p_clear", "p_set", "exit"
-            saction = input(f"{Fore.GREEN}Action:{Fore.BLUE} ")
+            saction = input(f"{Fore.GREEN}Action:{Fore.LIGHTBLUE_EX} ")
 
             if saction not in list(main.scommands.keys()):
                 print("Suggest Analytics Command is invalid. Please choose from the action list")
             else:  # Command is ok
                 if saction == "l_add":  # Add to the list of known letters
                     if len(active_list) == 5:
-                        print(f"{Fore.RED}Cant add to list, there are already 5 letters. Please use 'l_clear' to"
-                              f" clear the active list or 'l_set' to set a new list")
+                        print(f"{Fore.RED}Cant add to list, there are already 5 letters. Please use "
+                              f"'{Fore.YELLOW}l_clear{Fore.RED}' to clear the active list or "
+                              f"'{Fore.YELLOW}l_set{Fore.RED}' to set a new list")
                         time.sleep(3)
                     else:
                         print(f"{Fore.GREEN}Adding to list of known letters{Fore.RESET}\n")
@@ -164,7 +170,7 @@ def process_action(_action):
                     time.sleep(1)
                 elif saction == "p_set":    # Set letters into the positions that are known
                     os.system("cls")
-                    print(f"{Fore.BLUE}Setting Letter Positions")
+                    print(f"{Fore.LIGHTBLUE_EX}Setting Letter Positions")
                     for i in range(5):
                         char = input(f"{Fore.GREEN}Position {Fore.YELLOW}{i+1}: ")
                         active_pos[i] = [None, char][len(char) == 1 and not char == " "]
@@ -174,7 +180,7 @@ def process_action(_action):
                 elif saction == "i_set":
                     os.system("cls")
                     invalid_letters.clear()
-                    print(f"{Fore.BLUE}Setting Invalid Letters")
+                    print(f"{Fore.LIGHTBLUE_EX}Setting Invalid Letters")
                     letters = input(f"   {Fore.GREEN}>{Fore.YELLOW}:{Fore.RESET} ")
                     for x in letters:
                         if x not in invalid_letters:
@@ -200,7 +206,7 @@ def process_action(_action):
                     os.system("cls")
                 elif saction == "s_list":   # Print list of suggested words
                     print(f"{Fore.GREEN}Generating Suggestion List...{Fore.YELLOW} (This may take a while)\n")
-                    print(f"{Fore.BLUE}Progress{Fore.RESET}:{Fore.YELLOW} 0%", end='')
+                    print(f"{Fore.LIGHTBLUE_EX}Progress{Fore.RESET}:{Fore.YELLOW} 0%", end='')
 
                     # Generate list of words that contain known letters
                     word_list = main.word_list
@@ -208,48 +214,92 @@ def process_action(_action):
                     wl_length = len(word_list)
                     print('\033[?25l', end="")  # Hide Cursor
 
-                    for i, word in enumerate(word_list): # Generate List of valid Candidates
+                    for i, word in enumerate(word_list):  # Generate List of valid Candidates
                         valid = True
 
-                        # Check to make sure the word does not contain any invalid letters
-                        for letter in word:
-                            if letter in invalid_letters:
-                                valid = False
-                                break
-
-                        # Initial Check (Check to make sure that all known letters are in the word)
-                        if valid:
-                            for kl in active_list:
-                                _valid = False
-                                for letter in word:  # if the word contains a known letter _valid will tick True
-                                    _valid = letter == kl
-                                    if _valid:
-                                        break
-
-                                if not _valid:
+                        if word not in used_words_list:
+                            # Check to make sure the word does not contain any invalid letters
+                            for letter in word:
+                                if letter in invalid_letters:
                                     valid = False
                                     break
 
-                        if valid:  # Position Check
-                            for x, char in enumerate(word):
-                                if active_pos[x] is not None:
-                                    valid = active_pos[x] == char
-                                    if not valid:
+                            # Initial Check (Check to make sure that all known letters are in the word)
+                            if valid:
+                                for kl in active_list:
+                                    _valid = False
+                                    for letter in word:  # if the word contains a known letter _valid will tick True
+                                        _valid = letter == kl
+                                        if _valid:
+                                            break
+
+                                    if not _valid:
+                                        valid = False
                                         break
 
-                        if valid:
-                            candidates0.append(word)
+                            if valid:  # Position Check
+                                for x, char in enumerate(word):
+                                    if active_pos[x] is not None:
+                                        valid = active_pos[x] == char
+                                        if not valid:
+                                            break
 
-                        print(f'\r{Fore.BLUE}Progress{Fore.RESET}:{Fore.YELLOW} {round((i / wl_length) * 100)}%', end='')
+                            if valid:
+                                candidates0.append(word)
+
+                        print(f'\r{Fore.LIGHTBLUE_EX}Progress{Fore.RESET}:{Fore.YELLOW} {round((i / wl_length) * 100)}%', end='')
 
                     print('\033[?25h', end="")  # Show Cursor
                     print("\n")
+                    print(f"{Fore.GREEN}Chance of picking the right word: {Fore.YELLOW}{round((1 / len(candidates0) * 100), 5)}{Fore.GREEN}%")
+                    candidates0.sort()
                     print(f"{Fore.GREEN}List of candidates: {Fore.YELLOW}"
                           f"{[f'{Fore.GREEN},{Fore.YELLOW} '.join(x for x in candidates0), 'No Candidates Found'][not candidates0]}")
+                    
+                    print(f"{Fore.LIGHTBLUE_EX}Press any key to continue...{Fore.RESET}")
                     main.key_prompt = True
                     while main.key_prompt:
                         continue
+                elif saction == "u_add":
+                    print(f"{Fore.LIGHTBLUE_EX}Adding to Used Words List")
+                    word = input(f"   {Fore.GREEN}>{Fore.YELLOW}:{Fore.RESET} ")
+                    if len(word) != 5:
+                        print(f"{Fore.RED}Invalid Word Length{Fore.RESET}")
+                    else:
+                        print(f"{Fore.GREEN}Added {Fore.YELLOW}{word}{Fore.RESET}")
 
+                    used_words_list.append(word)
+                    time.sleep(1.3)
+                elif saction == "u_clear":
+                    print(f"{Fore.LIGHTBLUE_EX}Cleared {Fore.YELLOW}{len(used_words_list)}{Fore.RESET}"
+                          f" words from Used Words List!{Fore.RESET}")
+                    used_words_list.clear()
+                    time.sleep(1.2)
+                elif saction == "u_set":
+                    print(f"{Fore.LIGHTBLUE_EX}Setting Used Words List {Fore.RESET}")
+
+                    print("Please separate the words by a comma")
+                    used_words = list(input(f"   {Fore.GREEN}>{Fore.YELLOW}:{Fore.RESET} ").lower().replace(' ', '').split(','))
+                    valid_words = []
+
+                    warning = False
+                    for word in used_words:
+                        if len(word) != 5:
+                            warning = True
+                            print(f"{Fore.RED}Invalid Word{Fore.RESET}: {Fore.YELLOW}{word}")
+                        else:
+                            valid_words.append(word)
+
+                    if warning:
+                        time.sleep(1.3)
+
+                    valid_words.sort()
+                    print([f"{Fore.GREEN}Added {Fore.YELLOW}{f'{Fore.GREEN},{Fore.YELLOW} '.join([x for x in used_words])} to the used words list", f"{Fore.RED}No New Words Added to the list{Fore.RESET}"][not valid_words])
+
+                    for word in valid_words:
+                        used_words_list.append(word)
+
+                    time.sleep(1)
                 elif saction == "help":  # Print Help Command
                     for list_item in main.scommands:
                         print(f"{f'{Fore.GREEN}{list_item}{Fore.RESET}:':<30}"  # Key
@@ -261,7 +311,7 @@ def process_action(_action):
 
 
 def on_press(_):
-    if main.key_prompt:
+    if main.key_prompt and is_focused():
         main.key_prompt = False
 
 
