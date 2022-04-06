@@ -54,7 +54,7 @@ if __name__ == '__main__':
         print(f"{Fore.GREEN}Word List Load Status: "
               f"{[f'{Fore.GREEN}Loaded! {Fore.LIGHTBLUE_EX}{len(main.word_list)}{Fore.GREEN} words', f'{Fore.RED}Not Loaded'][not main.word_list]}\n")
         print(f"{Fore.GREEN}Please input the action to take{Fore.YELLOW}:{Fore.RESET} ", end='')
-        action = input()
+        action = input().lower()
         if action not in action:
             system("cls")
             print(f"{Fore.RED}Error{Fore.RESET}: {Fore.YELLOW}Selected action not in list")

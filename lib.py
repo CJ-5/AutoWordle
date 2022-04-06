@@ -79,7 +79,7 @@ def process_action(_action):
         while not file_loaded:
             os.system("cls")
             print(f"{Fore.YELLOW}Loading word list...{Fore.RESET}")
-            file_path = input("File Path: ")
+            file_path = input(f"{Fore.GREEN}File Path{Fore.YELLOW}:{Fore.RESET} ")
             if os.path.isfile(file_path):
                 f = open(file_path)
                 main.word_list = json.load(f)["word_list"]
@@ -91,6 +91,7 @@ def process_action(_action):
                 time.sleep(1)
         print(f"{Fore.GREEN}File Loaded{Fore.RESET}")
         time.sleep(1)
+        os.system("cls")
     elif _action == "suggest":
         os.system("cls")
         _stat = True
