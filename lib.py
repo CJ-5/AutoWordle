@@ -191,9 +191,11 @@ def process_action(_action):
                     os.system("cls")
                     invalid_letters.clear()
                     print(f"{Fore.LIGHTBLUE_EX}Setting Invalid Letters")
+                    print(f"{Fore.YELLOW}Note{Fore.RED}:{Fore.RESET} Duplicate letters do not need to be added "
+                          f"a quantity check is performed upon list generation.")
                     letters = input(f"   {Fore.GREEN}>{Fore.YELLOW}:{Fore.RESET} ")
                     for x in letters:
-                        if x not in invalid_letters:
+                        if x not in invalid_letters and x not in active_list:
                             invalid_letters.append(x)
 
                 elif saction == "i_add":
@@ -204,6 +206,9 @@ def process_action(_action):
                         print(f"{Fore.RED}Letter can only be {Fore.YELLOW}1{Fore.RED} in length.{Fore.RED}")
                     elif letter in invalid_letters:
                         print(f"{Fore.RED}Letter is already in list.")
+                    elif letter in active_list:
+                        print(f"{Fore.RED}Letter in list of known letters {Fore.YELLOW}NOTE{Fore.RESET}:"
+                              f" duplicate letters do not need to be added to this list.")
                     else:  # Add letter to list
                         print(f"{Fore.GREEN}Added {Fore.YELLOW}{letter}{Fore.GREEN} to the invalid letter list list!")
                         invalid_letters.append(letter)
@@ -224,7 +229,18 @@ def process_action(_action):
                     wl_length = len(word_list)
                     print('\033[?25l', end="")  # Hide Cursor
 
+                    # Generate known letter occurrence list
+                    kl_dict = dict()
+                    for l in active_list:
+                        if l not in list(kl_dict.keys()):  # Create New entry
+                            kl_dict[l] = 1
+                        else:
+                            kl_dict[l] += 1
+
+                    # print(kl_dict)
+
                     for i, word in enumerate(word_list):  # Generate List of valid Candidates
+
                         valid = True
 
                         if word not in used_words_list:
@@ -236,14 +252,20 @@ def process_action(_action):
 
                             # Initial Check (Check to make sure that all known letters are in the word)
                             if valid:
-                                for kl in active_list:
-                                    _valid = False
-                                    for letter in word:  # if the word contains a known letter _valid will tick True
-                                        _valid = letter == kl
-                                        if _valid:
-                                            break
+                                # Generate Letter Occurrence list for the word
+                                _w = dict()
+                                for l in word:
+                                    if l not in _w:
+                                        _w[l] = 1
+                                    else:
+                                        _w[l] += 1
 
-                                    if not _valid:
+                                # Check Known Letter dictionary vs Local Word Dictionary
+                                for l in kl_dict:
+                                    if l not in _w:  # Checks if the known letter is actually in the word
+                                        valid = False
+                                        break
+                                    elif kl_dict[l] > _w[l]:  # Checks that occurrences are the same
                                         valid = False
                                         break
 
@@ -257,11 +279,13 @@ def process_action(_action):
                             if valid:
                                 candidates0.append(word)
 
+
+
                         print(f'\r{Fore.LIGHTBLUE_EX}Progress{Fore.RESET}:{Fore.YELLOW} {round((i / wl_length) * 100)}%', end='')
 
-                    print('\033[?25h', end="")  # Show Cursor
-                    print("\n")
-                    print(f"{Fore.GREEN}Chance of picking the right word: {Fore.YELLOW}{round((1 / len(candidates0) * 100), 5)}{Fore.GREEN}%")
+                    print('\033[?25h')  # Show Cursor
+                    chance = 1 / [len(candidates0), 1][not candidates0]  # fixes divison by 0 issue with code below
+                    print(f"{Fore.GREEN}Chances of picking the right word: " + f"{[f'{Fore.YELLOW}{round((chance * 100), 4)}{Fore.GREEN}%', f'{Fore.YELLOW}0{Fore.GREEN}%'][not candidates0]}")
                     candidates0.sort()
                     print(f"{Fore.GREEN}List of candidates: {Fore.YELLOW}"
                           f"{[f'{Fore.GREEN},{Fore.YELLOW} '.join(x for x in candidates0), 'No Candidates Found'][not candidates0]}")
@@ -270,6 +294,7 @@ def process_action(_action):
                     main.key_prompt = True
                     while main.key_prompt:
                         continue
+
                 elif saction == "u_add":
                     print(f"{Fore.LIGHTBLUE_EX}Adding to Used Words List")
                     word = input(f"   {Fore.GREEN}>{Fore.YELLOW}:{Fore.RESET} ")

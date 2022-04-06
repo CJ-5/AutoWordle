@@ -62,4 +62,3 @@ if __name__ == '__main__':
             time.sleep(2)
         else:
             lib.process_action(action)
-
