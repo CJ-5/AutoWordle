@@ -303,9 +303,9 @@ def process_action(_action):
                             main.word_list.remove(cword)
 
                     print('\033[?25h')  # Show Cursor
-                    chance = 1 / [len(candidates0), 1][not candidates0]  # fixes divison by 0 issue with code below
+                    chance = 1 / [len(candidates0), 1][not candidates0]
                     print(f"{Fore.GREEN}Chances of picking the right word: " +
-                          f"{[f'{Fore.YELLOW}{round((chance * 100), 4)}{Fore.GREEN}%', f'{Fore.YELLOW}0{Fore.GREEN}%'][not candidates0]}")
+                          f"{[f'{Fore.YELLOW}{round(((1 / [len(candidates0), 1][not candidates0]) * 100), 4)}{Fore.GREEN}%', f'{Fore.YELLOW}0{Fore.GREEN}%'][not candidates0]}")
                     candidates0.sort()
                     print(f"{Fore.GREEN}List of candidates: {Fore.YELLOW}"
                           f"{[f'{Fore.GREEN},{Fore.YELLOW} '.join(x for x in candidates0), 'No Candidates Found'][not candidates0]}")
@@ -329,9 +329,9 @@ def process_action(_action):
                           f" words from Used Words List!{Fore.RESET}")
                     used_words_list.clear()
                     time.sleep(1.2)
-                elif saction == "u_set":
-                    print(f"{Fore.LIGHTBLUE_EX}Setting Used Words List {Fore.RESET}")
 
+                elif saction == "u_set":
+                    print(f"{Fore.LIGHTBLUE_EX}Setting Used Word List {Fore.RESET}")
                     print(f"{Fore.LIGHTBLUE_EX}Please separate the words by a comma{Fore.RESET}")
                     used_words = list(
                         input(f"   {Fore.GREEN}>{Fore.YELLOW}:{Fore.RESET} ").lower().replace(' ', '').split(','))
@@ -366,7 +366,7 @@ def process_action(_action):
                     active_list.clear()
                     used_words_list.clear()
                 elif saction == "exit":
-                    print(Fore.RESET)
+                    print(f"{Fore.RED}Exiting...")
                     _stat = False
 
 
