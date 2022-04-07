@@ -13,7 +13,12 @@ A future version will add the feature for *Worlde* to be done automatically (For
 Use `suggest` and then help to see its usage. Then select one of the unused words from its list of candidates and rinse and repeat.
 
 ### Note:
-The included ***data.json*** is the official *Wordle* word list as of `April 5th, 2022`
+- The included ***data.json*** is the official *Wordle* word list as of `April 5th, 2022`
+- In the *Wordle* source code there are 2 lists of words. There is one that is used for actual daily Wordle words, and
+another that adds to the list of allowed guesses. You can guess from either list, but only one is actually chosen from
+for the Wordle. Therefore there are words that you may guess and want to add to the list of used words that will be
+denied and called invalid, this is not a problem with the code, it is a choice to improve the speed and remove words
+that do not need to be processed. If you are making your own list, use only the words from the ```
 
 Simple. \
 Enjoy!

@@ -28,25 +28,14 @@ scommands = {"l_add": "Add to the list of known letters",  # Suggest commands
              "exit": "Exit suggestion mode"}
 
 action = None
+word_list_original = []
 word_list = []
 key_prompt = False
 
 if __name__ == '__main__':
     print("Initiating WordleAuto...")
     time.sleep(1)
-    print("Starting Async Any_Key Listener")
     lib.any_key_prompt()
-
-    # Add script to attempt to auto load the word list
-    # print("Loading Wordlist")
-    # if os.path.exists("./data.json"):  # Load words from word list file
-    #     f = open("./data.json")
-    #     json_file = json.load(f)
-    #     word_list = json_file["word_list"]
-    #     f.close()
-    #
-    # print("Loaded Word List!")
-    # # (action is None) or (action not in action_list)
 
     while True:  # Command Handler
         print(f"\n{Fore.GREEN}Action List{Fore.YELLOW}:{Fore.RESET}")
