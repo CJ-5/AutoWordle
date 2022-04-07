@@ -1,6 +1,5 @@
 # WordleAuto
-A tool for *Wordle* that suggests words based off of inputted data. This is not perfect, its base framework was created in 2 hours.
-A future version will add the feature for *Worlde* to be done automatically (For those who are into that kind of thing).
+A tool for *Wordle* that filters down the official word list based off of inputted command data. Current relase ***does not*** support full automated guessing.
 
 ### Packages:
 - colorama
