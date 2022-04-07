@@ -24,6 +24,7 @@ scommands = {"l_add": "Add to the list of known letters",  # Suggest commands
              "u_add": "Add to the used words list",
              "u_set": f"Set the used words list ({Fore.LIGHTGREEN_EX}separate the words by a comma{Fore.RESET})",
              "u_clear": "Clear the used words list",
+             "reset": "Reset all inputted data",
              "help": "View this command help message",
              "exit": "Exit suggestion mode"}
 

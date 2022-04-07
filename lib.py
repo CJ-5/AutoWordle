@@ -63,7 +63,9 @@ def process_action(_action):
             if os.path.isfile(file_path):
                 f = open(file_path)
                 main.word_list_original = json.load(f)["word_list"]
-                # print(len(main.word_list_original))
+                if len(main.word_list) > 9999:
+                    print(f"{Fore.RED}NOTE{Fore.RESET}: {Fore.YELLOW}This wordlist is over "
+                          f"{Fore.GREEN}9999{Fore.YELLOW} words, the analysis scripts may take a while.")
                 f.close()
                 file_loaded = True  # Exit Loop
             else:  # file does not exist
@@ -106,20 +108,19 @@ def process_action(_action):
             print(f"{Fore.GREEN}Used Words List: "
                   f"{[Fore.YELLOW + f'{Fore.GREEN}, {Fore.YELLOW}'.join([x for x in used_words_list]), f'{Fore.RED}Empty List'][not used_words_list]}{Fore.RESET}")
 
-            print(f"""
-            {Fore.GREEN}Known Position List:
-            {Fore.YELLOW}1{Fore.RESET}: {Fore.LIGHTBLUE_EX}{active_pos[0]}
-            {Fore.YELLOW}2{Fore.RESET}: {Fore.LIGHTBLUE_EX}{active_pos[1]}
-            {Fore.YELLOW}3{Fore.RESET}: {Fore.LIGHTBLUE_EX}{active_pos[2]}
-            {Fore.YELLOW}4{Fore.RESET}: {Fore.LIGHTBLUE_EX}{active_pos[3]}
-            {Fore.YELLOW}5{Fore.RESET}: {Fore.LIGHTBLUE_EX}{active_pos[4]}
-            """)
+            print(f"{Fore.GREEN}Known Position List: \
+            \n{Fore.YELLOW}1{Fore.RESET}: {Fore.LIGHTBLUE_EX}{active_pos[0]}\
+            \n{Fore.YELLOW}2{Fore.RESET}: {Fore.LIGHTBLUE_EX}{active_pos[1]}\
+            \n{Fore.YELLOW}3{Fore.RESET}: {Fore.LIGHTBLUE_EX}{active_pos[2]}\
+            \n{Fore.YELLOW}4{Fore.RESET}: {Fore.LIGHTBLUE_EX}{active_pos[3]}\
+            \n{Fore.YELLOW}5{Fore.RESET}: {Fore.LIGHTBLUE_EX}{active_pos[4]}\n\n")
 
             # "l_add", "l_clear", "l_set", "p_clear", "p_set", "exit"
-            saction = input(f"{Fore.GREEN}Action:{Fore.LIGHTBLUE_EX} ")
+            saction = input(f"{Fore.GREEN}Action:{Fore.LIGHTBLUE_EX} ").lower()
 
             if saction not in list(main.scommands.keys()):
-                print("Suggest Analytics Command is invalid. Please choose from the action list")
+                print(f"{Fore.RED}Suggest Analytics Command is invalid. Please choose from the action list{Fore.RESET}")
+                time.sleep(1.3)
             else:  # Command is ok
                 if saction == "l_add":  # Add to the list of known letters
                     if len(active_list) == 5:
@@ -183,11 +184,11 @@ def process_action(_action):
 
                 elif saction == "i_set":
                     os.system("cls")
+                    old_letters = invalid_letters.copy()
                     invalid_letters.clear()
                     print(f"{Fore.LIGHTBLUE_EX}Setting Invalid Letters")
                     print(f"{Fore.YELLOW}Note{Fore.RED}:{Fore.RESET} Duplicate letters do not need to be added "
                           f"a quantity check is performed upon list generation.")
-                    old_letters = invalid_letters.copy()
                     letters = input(f"   {Fore.GREEN}>{Fore.YELLOW}:{Fore.RESET} ")
 
                     # Check for duplicates and conflicts
@@ -303,8 +304,8 @@ def process_action(_action):
 
                     print('\033[?25h')  # Show Cursor
                     chance = 1 / [len(candidates0), 1][not candidates0]  # fixes divison by 0 issue with code below
-                    print(
-                        f"{Fore.GREEN}Chances of picking the right word: " + f"{[f'{Fore.YELLOW}{round((chance * 100), 4)}{Fore.GREEN}%', f'{Fore.YELLOW}0{Fore.GREEN}%'][not candidates0]}")
+                    print(f"{Fore.GREEN}Chances of picking the right word: " +
+                          f"{[f'{Fore.YELLOW}{round((chance * 100), 4)}{Fore.GREEN}%', f'{Fore.YELLOW}0{Fore.GREEN}%'][not candidates0]}")
                     candidates0.sort()
                     print(f"{Fore.GREEN}List of candidates: {Fore.YELLOW}"
                           f"{[f'{Fore.GREEN},{Fore.YELLOW} '.join(x for x in candidates0), 'No Candidates Found'][not candidates0]}")
