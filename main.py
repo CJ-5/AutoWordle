@@ -1,11 +1,11 @@
-import colorama, json, lib, time, pynput
 from os import system
 import os
-
+import sys
+import subprocess
+import colorama, json, lib, time, pynput
 from win32gui import GetWindowText, GetForegroundWindow
 from colorama import Style, Fore, Back
 import json
-
 import main
 
 colorama.init()  # Initiate colorama lib (needed for escape codes)
