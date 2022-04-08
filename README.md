@@ -8,7 +8,7 @@ A tool for *Wordle* that filters down the official word list based off of inputt
 
 ### Usage:
 * Download the newest release and unzip into a new folder. Run `main.py` via Command Prompt or with the Pyhton Interperter (`3.9+`)
-1. Load a file from the main command menu via the `load` command. Select a word list that contains all words under the `"word_list"` key (use the included data.json which is the current official word list for *Worlde*, as of `April 7th, 2022`)
+1. Load a file from the main command menu via the `load` command. Select a word list that contains all words under the `"word_list"` key (use the included data.json which is the current official word list for *Wordle*, as of `April 7th, 2022`)
 2. Select any other command (analyze will analyze all words in the list and suggest a word best suited to be the starter word. `Complete` is not implemented (functionality mentioned before, auto completion), and `suggest` which is the main command that you will use).\
 Use `suggest` and then help to see its usage. Then select one of the unused words from its list of candidates and rinse and repeat.
 
