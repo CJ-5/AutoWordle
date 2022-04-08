@@ -18,7 +18,7 @@ Use `suggest` and then help to see its usage. Then select one of the unused word
 another that adds to the list of allowed guesses. You can guess from either list, but only one is actually chosen from
 for the Wordle. Therefore there are words that you may guess and want to add to the list of used words that will be
 denied and called invalid, this is not a problem with the code, it is a choice to improve the speed and remove words
-that do not need to be processed. If you are making your own list, use only the words under the `Oa` key.
+that do not need to be processed. If you are making your own list, use only the words under the `Ma` key.
 
 Simple. \
 Enjoy!
